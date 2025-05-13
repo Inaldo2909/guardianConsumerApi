@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Frames Kafka WebSocket</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+    <h1>Frames Recebidos</h1>
+    <div id="images"></div>
+
+    <script>
+        const socket = new SockJS('/ws/frames');
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            console.log("✅ WebSocket conectado!");
+
+            stompClient.subscribe('/topic/frames', function (message) {
+                console.log("📩 Mensagem WebSocket:", message.body);
+                try {
+                    const data = JSON.parse(message.body);
+                    if (data.frame) {
+                        const img = document.createElement("img");
+                        img.src = 'data:image/jpeg;base64,' + data.frame;
+                        img.style.maxWidth = "400px";
+                        img.style.margin = "10px";
+                        document.getElementById("images").appendChild(img);
+                    }
+                } catch (e) {
+                    console.error("❌ Erro ao processar mensagem:", e);
+                }
+            });
+
+        }, function (error) {
+            console.error("❌ Erro ao conectar WebSocket:", error);
+        });
+    </script>
+
+</body>
+</html>
