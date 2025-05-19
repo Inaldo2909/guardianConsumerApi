@@ -1,11 +1,14 @@
 package br.com.guardian.consumer.service;
 
 import br.com.guardian.consumer.model.Message;
+import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -15,11 +18,14 @@ import java.util.Properties;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Service
 public class KafkaMessageConsumer {
     private static final String TOPIC = "topic.frame.processado";
     private final KafkaConsumer<String, String> consumer;
 
-    public KafkaMessageConsumer(String bootstrapServers, String groupId) {
+    public KafkaMessageConsumer(@Value("${spring.kafka.bootstrap-servers}")
+                                String bootstrapServers, @Value("{spring.kafka.bootstrap-servers}") String groupId) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
